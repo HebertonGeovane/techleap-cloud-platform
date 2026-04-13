@@ -3,9 +3,18 @@ provider "aws" {
   allowed_account_ids = [var.aws_account_id]
 }
 
-resource "aws_s3_bucket" "terraform_state" {
-  bucket = "${var.project_name}-terraform-state-heberton"
+terraform {
+  backend "s3" {
+    bucket         = "techleap-terraform-state-heberton"
+    key            = "terraform.tfstate"
+    region         = "us-east-1"
+    
+  }
 }
+
+#resource "aws_s3_bucket" "terraform_state" {
+#  bucket = "${var.project_name}-terraform-state-heberton"
+#}
 
 resource "aws_ecr_repository" "frontend" {
   name = "${var.project_name}-frontend"
@@ -31,7 +40,7 @@ module "vpc" {
 
 resource "aws_db_subnet_group" "rds_subnet_group" {
   name       = "${var.project_name}-rds-subnet-group-manual"
-  # Aqui usamos as subnets privadas que você viu no seu Resource Map
+  
   subnet_ids = module.vpc.private_subnets
 
   tags = {
