@@ -12,9 +12,12 @@ terraform {
   }
 }
 
-#resource "aws_s3_bucket" "terraform_state" {
-#  bucket = "${var.project_name}-terraform-state-heberton"
-#}
+resource "aws_s3_bucket" "terraform_state" {
+  bucket = "${var.project_name}-terraform-state-heberton"
+  lifecycle {
+    prevent_destroy = true
+  }
+}
 
 resource "aws_ecr_repository" "frontend" {
   name = "${var.project_name}-frontend"
