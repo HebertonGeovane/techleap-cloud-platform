@@ -1,0 +1,78 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clonar repositório
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Instalar dependências (Backend)
+        run: |
+          cd backend
+          npm install
+
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Clonar repositório
+        uses: actions/checkout@v4
+
+      - name: Rodar Teste de Métricas (Prometheus)
+        run: |
+          cd backend
+          npm install
+          nohup node app.js > app.log 2>&1 &
+          sleep 5
+          curl -s http://localhost:3000/metrics | grep process_cpu_seconds_total || exit 1
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Clonar repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar AWS CLI
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Login no Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build e Push Backend para ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          docker build -t $ECR_REGISTRY/techleap-backend:latest ./backend
+          docker push $ECR_REGISTRY/techleap-backend:latest
+
+      - name: Build e Push Frontend para ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          docker build -t $ECR_REGISTRY/techleap-frontend:latest ./frontend
+          docker push $ECR_REGISTRY/techleap-frontend:latest
+
+      - name: Terraform Apply (Infra + ECS Update)
+        env:
+          TF_VAR_db_password: ${{ secrets.DB_PASSWORD }} 
+          TF_VAR_aws_account_id: ${{ secrets.AWS_ACCOUNT_ID }}
+        run: |
+          cd terraform
+          terraform init
+          terraform apply -auto-approve

@@ -1,0 +1,11 @@
+**/terraform.tfstate
+**/terraform.tfstate.*
+**/.terraform/
+**/terraform.tfvars
+
+
+**/node_modules/
+**/app.log
+
+
+**/.DS_Store

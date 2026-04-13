@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechLeap | Career Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f8fafc; }
+        .futuristic-font { font-family: 'Orbitron', sans-serif; }
+        .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .form-input { border-radius: 8px; background: #1e293b; border: 1px solid #334155; padding: 12px; width: 100%; outline: none; transition: 0.3s; }
+        .form-input:focus { border-color: #38bdf8; box-shadow: 0 0 8px rgba(56, 189, 248, 0.4); }
+        .sticky-form { position: sticky; top: 100px; }
+        .hide { display: none; }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <header class="p-6 border-b border-slate-800 bg-slate-900/90 sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <h1 class="text-2xl futuristic-font font-bold text-sky-400 cursor-pointer" onclick="location.reload()">TECH<span class="text-white">LEAP</span></h1>
+            <div class="text-sm space-x-4 text-slate-400">
+                <span class="hover:text-white cursor-pointer">English</span>
+                <span class="text-sky-500 font-bold underline">Português [BR]</span>
+            </div>
+        </div>
+    </header>
+
+    <main id="home-view" class="max-w-4xl mx-auto py-12 px-6">
+        <div class="text-center mb-12">
+            <h2 class="text-4xl futuristic-font font-bold mb-4">Vagas de TI <span class="text-sky-500">Comece Agora</span></h2>
+            <p class="text-slate-400 italic">O site de vagas que você estava procurando. Remoto e Presencial.</p>
+        </div>
+
+        <div id="jobs-grid" class="space-y-4">
+            <div class="glass-card p-6 rounded-xl border-l-4 border-sky-500 hover:bg-slate-800/50 cursor-pointer transition" onclick="openJobDetail('SRE-01')">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h3 class="text-xl font-bold">Site Reliability Engineer Pleno</h3>
+                        <p class="text-slate-400">TechLeap Hub • Remoto • <span class="text-sky-400">#SRE-01</span></p>
+                    </div>
+                    <i class="fas fa-chevron-right text-slate-600"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-10">
+            <button id="load-more" onclick="loadExtraJobs()" class="border border-sky-500 text-sky-500 px-8 py-3 rounded-full font-bold hover:bg-sky-500 hover:text-white transition">
+                VER MAIS VAGAS
+            </button>
+        </div>
+    </main>
+
+    <section id="job-detail-view" class="hide max-w-7xl mx-auto py-12 px-6">
+        <button onclick="showHome()" class="text-slate-400 hover:text-white mb-8 transition">
+            <i class="fas fa-arrow-left mr-2"></i> Voltar para a lista
+        </button>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+            <div class="lg:col-span-2 space-y-8">
+                <div class="border-b border-slate-800 pb-6">
+                    <h2 id="job-title-display" class="text-3xl font-bold mb-2"></h2>
+                    <p class="text-sky-400 font-bold uppercase tracking-widest text-sm">Remota • Brasil • Tecnologia</p>
+                </div>
+
+                <div class="prose prose-invert text-slate-300 space-y-4">
+                    <p class="font-bold text-white text-lg">Sobre a Empresa</p>
+                    <p>Somos uma plataforma focada em acelerar carreiras. Conectamos profissionais a grandes oportunidades usando infraestrutura de ponta.</p>
+                    
+                    <p class="font-bold text-white text-lg">O que você vai fazer:</p>
+                    <ul class="list-disc pl-5 space-y-2">
+                        <li>Implementar soluções de observabilidade;</li>
+                        <li>Gerenciar infraestrutura escalável;</li>
+                        <li>Trabalhar com IaC e Contêineres em ambientes produtivos;</li>
+                        <li>Automatizar pipelines CI/CD.</li>
+                    </ul>
+
+                    <p class="font-bold text-white text-lg">O que buscamos:</p>
+                    <p>Experiência com Cloud Computing, monitoramento de sistemas e mente focada em automação.</p>
+                </div>
+            </div>
+
+            <div class="lg:col-span-1">
+                <div class="glass-card p-8 rounded-2xl sticky-form border-t-4 border-sky-500">
+                    <h3 class="text-xl font-bold mb-6 text-white text-center">Inscreva-se para esta vaga</h3>
+                    
+                    <form id="apply-form" class="space-y-4" onsubmit="handleApplication(event)">
+                        <div>
+                            <label class="text-xs text-slate-400 block mb-1 uppercase font-bold">Nome Completo*</label>
+                            <input type="text" id="cand-name" required class="form-input" placeholder="Seu nome">
+                        </div>
+                        <div>
+                            <label class="text-xs text-slate-400 block mb-1 uppercase font-bold">E-mail*</label>
+                            <input type="email" id="cand-email" required class="form-input" placeholder="email@exemplo.com">
+                        </div>
+                        <div>
+                            <label class="text-xs text-slate-400 block mb-1 uppercase font-bold">Currículo (PDF)*</label>
+                            <label class="flex flex-col items-center justify-center border-2 border-dashed border-slate-700 p-4 rounded-lg cursor-pointer hover:border-sky-500 transition">
+                                <i class="fas fa-cloud-upload-alt text-slate-500 mb-2"></i>
+                                <span id="file-name-display" class="text-sm text-slate-400">Anexar currículo</span>
+                                <input type="file" id="cand-cv" class="hidden" accept=".pdf" required onchange="updateFileName(this)">
+                            </label>
+                        </div>
+                        <div>
+                            <label class="text-xs text-slate-400 block mb-1 uppercase font-bold">Pretensão Salarial*</label>
+                            <input type="text" id="cand-salary" required class="form-input" placeholder="R$ 0.000,00">
+                        </div>
+
+                        <button type="submit" class="w-full bg-sky-600 hover:bg-sky-500 py-4 rounded-xl font-bold text-white transition uppercase tracking-wider">
+                            Continuar Inscrição
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="success-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[200] p-4">
+     <div class="glass-card p-8 rounded-3xl max-w-sm w-full text-center border-t-4 border-sky-500 shadow-2xl shadow-sky-500/20">
+        <div class="w-20 h-20 bg-sky-500/20 rounded-full flex items-center justify-center mx-auto mb-6 text-sky-400 text-3xl">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <h3 class="text-2xl futuristic-font font-bold mb-2 text-white">Inscrição Confirmada!</h3>
+        <p id="modal-msg" class="text-slate-400 mb-8 text-sm leading-relaxed"></p>
+        <button onclick="closeSuccessModal()" class="w-full bg-sky-600 hover:bg-sky-500 py-3 rounded-xl font-bold uppercase tracking-widest transition-all">
+            Ótimo!
+        </button>
+     </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
