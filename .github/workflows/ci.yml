@@ -42,6 +42,11 @@ jobs:
     steps:
       - name: Clonar repositório
         uses: actions/checkout@v4
+      
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.14.8"
 
       - name: Configurar AWS CLI
         uses: aws-actions/configure-aws-credentials@v4
