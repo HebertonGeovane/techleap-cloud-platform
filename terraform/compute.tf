@@ -9,6 +9,13 @@ resource "aws_security_group" "alb_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  ingress {
+    from_port   = 3000
+    to_port     = 3000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
@@ -40,7 +47,20 @@ resource "aws_lb_target_group" "app_tg" {
 }
 
 
-resource "aws_lb_listener" "front_end" {
+
+resource "aws_lb_listener" "http_80" {
+  load_balancer_arn = aws_lb.main_alb.arn
+  port              = 80
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.app_tg.arn
+  }
+}
+
+
+resource "aws_lb_listener" "api_3000" {
   load_balancer_arn = aws_lb.main_alb.arn
   port              = 3000
   protocol          = "HTTP"
