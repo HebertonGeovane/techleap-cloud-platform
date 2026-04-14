@@ -115,6 +115,9 @@ Métricas: http://localhost:3000/metrics
 
 * `DB_PASSWORD`
 
+## 🛡️ Segurança e Conectividade
+O acesso ao banco de dados foi blindado em uma Subnet Privada e isolado da internet para garantir a segurança dos dados. A conectividade para administração e debug via DBeaver foi viabilizada através de um Bastion Host com Túnel SSH, unindo proteção robusta com flexibilidade operacional.
+
 ## 🎯 Conclusão
 Este repositório serve como evidência técnica de implementação de pipelines de alta complexidade, unindo desenvolvimento de software com engenharia de infraestrutura robusta.
 

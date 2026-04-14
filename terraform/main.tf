@@ -35,10 +35,48 @@ module "vpc" {
   cidr   = "10.0.0.0/16"
 
   azs             = ["${var.region}a", "${var.region}b"]
-  private_subnets = ["10.0.1.0/24", "10.0.2.0/24"] # Para o RDS
-  public_subnets  = ["10.0.101.0/24", "10.0.102.0/24"] # Para o Load Balancer
+  private_subnets = ["10.0.1.0/24", "10.0.2.0/24"] 
+  public_subnets  = ["10.0.101.0/24", "10.0.102.0/24"] 
 
   enable_nat_gateway = true 
+}
+
+resource "aws_key_pair" "bastion_key" {
+  key_name   = "${var.project_name}-bastion-key"
+  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDWcOdlsEIPRSUQmvg/7uJEIDfdRxBxLhNvTxUN+ajenBA46VmiKJnv66uV/o0SjZzdGgxFF48tmqsvbSyajzexSPKmXBTfi5/rLsLCZZxJ4K43zhkmN/xB1oRQr26Uc1R6+hWN18BikVgu8nJ1n0gubJ+8f5nX0bbEXkdf19N1AbrgYNbn3GxA9RyQImeorI/xfGIJXuoYpo4dTdDgj3xyaEE9LRRpWyNVNIACAv+xVZlOw9G22ugk+/iABfXDcFs02IYm9+ezs0w2KokErkCGHR1OQsgx6x2NIopfz978ayywM/BMRRxr1v8iocAzNe9LwPtowHyF4p7tKtktSTYF"
+}
+
+resource "aws_instance" "bastion" {
+  ami           = "ami-0c7217cdde317cfec" 
+  instance_type = "t3.nano"               
+  
+  subnet_id                   = module.vpc.public_subnets[0]
+  vpc_security_group_ids      = [aws_security_group.bastion_sg.id]
+  key_name                    = aws_key_pair.bastion_key.key_name
+  associate_public_ip_address = true
+
+  tags = {
+    Name = "${var.project_name}-bastion"
+  }
+}
+
+resource "aws_security_group" "bastion_sg" {
+  name        = "${var.project_name}-bastion-sg"
+  vpc_id      = module.vpc.vpc_id
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] # Em produção, coloque o seu IP aqui!
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 }
 
 resource "aws_db_subnet_group" "rds_subnet_group" {
