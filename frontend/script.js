@@ -70,7 +70,7 @@ function handleApplication(e) {
     console.table(db_candidaturas);
 
     
-    fetch(`http://${backend_url}:3000/candidatar`, {
+    fetch(`http://techleap-alb-165520574.us-east-1.elb.amazonaws.com:3000/inscricao`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(candidatura)
