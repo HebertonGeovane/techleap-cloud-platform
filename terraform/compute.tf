@@ -92,6 +92,9 @@ resource "aws_ecs_task_definition" "app_task" {
       cpu       = 128
       memory    = 256
       portMappings = [{ containerPort = 80, hostPort = 80 }]
+      environment = [
+        { name = "BACKEND_URL", value = "http://${aws_lb.main_alb.dns_name}:3000" }
+      ]
     },
     {
       name      = "backend"
@@ -102,7 +105,8 @@ resource "aws_ecs_task_definition" "app_task" {
       environment = [
         { name = "DB_HOST", value = aws_db_instance.rds_master.address },
         { name = "DB_USER", value = "techuser" },
-        { name = "DB_PASSWORD", value = var.db_password }
+        { name = "DB_PASSWORD", value = var.db_password },
+        { name = "DB_NAME", value = "techleapdb" }
       ]
     }
   ])
@@ -117,7 +121,7 @@ resource "aws_ecs_service" "main_service" {
   launch_type     = "FARGATE"
 
   network_configuration {
-    subnets          = module.vpc.private_subnets
+    subnets          = [module.vpc.private_subnets[0], module.vpc.private_subnets[1]]
     security_groups  = [aws_security_group.ecs_tasks_sg.id]
     assign_public_ip = false
   }

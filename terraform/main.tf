@@ -35,10 +35,12 @@ module "vpc" {
   cidr   = "10.0.0.0/16"
 
   azs             = ["${var.region}a", "${var.region}b"]
-  private_subnets = ["10.0.1.0/24", "10.0.2.0/24"] 
-  public_subnets  = ["10.0.101.0/24", "10.0.102.0/24"] 
+  private_subnets = ["10.0.1.0/24", "10.0.2.0/24","10.0.3.0/24", "10.0.4.0/24"] 
+  public_subnets  = ["10.0.101.0/24","10.0.102.0/24"] 
 
   enable_nat_gateway = true 
+  single_nat_gateway     = true
+  one_nat_gateway_per_az = false
 }
 
 resource "aws_key_pair" "bastion_key" {
@@ -82,7 +84,7 @@ resource "aws_security_group" "bastion_sg" {
 resource "aws_db_subnet_group" "rds_subnet_group" {
   name       = "${var.project_name}-rds-subnet-group-manual"
   
-  subnet_ids = module.vpc.private_subnets
+  subnet_ids = [module.vpc.private_subnets[2], module.vpc.private_subnets[3]]
 
   tags = {
     Name = "techleap-rds-subnet-group"
@@ -98,7 +100,7 @@ resource "aws_db_instance" "rds_master" {
   username             = "techuser"
   password             = var.db_password
   multi_az             = true 
-  publicly_accessible    = true
+  publicly_accessible    = false
   db_subnet_group_name   = aws_db_subnet_group.rds_subnet_group.name
   vpc_security_group_ids = [aws_security_group.rds_sg.id]
   skip_final_snapshot  = true

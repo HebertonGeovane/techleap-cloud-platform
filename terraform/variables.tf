@@ -15,3 +15,4 @@ variable "db_password" {
   description = "Senha do RDS (será passada via Github Secrets)"
   sensitive   = true
 }
+
