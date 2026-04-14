@@ -42,7 +42,7 @@ module "vpc" {
 }
 
 resource "aws_key_pair" "bastion_key" {
-  key_name   = "${var.project_name}-bastion-key"
+  key_name   = "techleap-bastion-key-tf"
   public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDWcOdlsEIPRSUQmvg/7uJEIDfdRxBxLhNvTxUN+ajenBA46VmiKJnv66uV/o0SjZzdGgxFF48tmqsvbSyajzexSPKmXBTfi5/rLsLCZZxJ4K43zhkmN/xB1oRQr26Uc1R6+hWN18BikVgu8nJ1n0gubJ+8f5nX0bbEXkdf19N1AbrgYNbn3GxA9RyQImeorI/xfGIJXuoYpo4dTdDgj3xyaEE9LRRpWyNVNIACAv+xVZlOw9G22ugk+/iABfXDcFs02IYm9+ezs0w2KokErkCGHR1OQsgx6x2NIopfz978ayywM/BMRRxr1v8iocAzNe9LwPtowHyF4p7tKtktSTYF"
 }
 
@@ -68,7 +68,7 @@ resource "aws_security_group" "bastion_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] # Em produção, coloque o seu IP aqui!
+    cidr_blocks = ["0.0.0.0/0"] 
   }
 
   egress {
