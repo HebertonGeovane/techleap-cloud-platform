@@ -4,7 +4,11 @@ const cors = require('cors');
 const app = express();
 
 app.use(express.json());
-app.use(cors()); 
+app.use(cors({
+  origin: '*', // Permite qualquer origem (Frontend) acessar a API
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type']
+})); 
 
 const client = require('prom-client');
 const collectDefaultMetrics = client.collectDefaultMetrics;
