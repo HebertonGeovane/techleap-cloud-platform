@@ -60,6 +60,7 @@ resource "aws_db_instance" "rds_master" {
   username             = "techuser"
   password             = var.db_password
   multi_az             = true 
+  publicly_accessible    = true
   db_subnet_group_name   = aws_db_subnet_group.rds_subnet_group.name
   vpc_security_group_ids = [aws_security_group.rds_sg.id]
   skip_final_snapshot  = true
@@ -75,6 +76,13 @@ resource "aws_security_group" "rds_sg" {
     from_port       = 5432
     to_port         = 5432
     security_groups = [aws_security_group.ecs_tasks_sg.id] 
+  }
+
+  ingress {
+    protocol    = "tcp"
+    from_port   = 5432
+    to_port     = 5432
+    cidr_blocks = ["0.0.0.0/0"] # Em produção usaríamos seu IP real, mas aqui libera geral
   }
 
   egress {
