@@ -47,6 +47,20 @@ resource "aws_lb_target_group" "app_tg" {
 }
 
 
+resource "aws_lb_target_group" "backend_tg" {
+  name        = "${var.project_name}-backend-tg"
+  port        = 3000
+  protocol    = "HTTP"
+  vpc_id      = module.vpc.vpc_id
+  target_type = "ip"
+
+  health_check {
+    path = "/metrics" 
+    port = "3000"
+  }
+}
+
+
 
 resource "aws_lb_listener" "http_80" {
   load_balancer_arn = aws_lb.main_alb.arn
@@ -67,7 +81,7 @@ resource "aws_lb_listener" "api_3000" {
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.app_tg.arn
+    target_group_arn = aws_lb_target_group.backend_tg.arn
   }
 }
 
@@ -130,6 +144,12 @@ resource "aws_ecs_service" "main_service" {
     target_group_arn = aws_lb_target_group.app_tg.arn
     container_name   = "frontend"
     container_port   = 80
+  }
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.backend_tg.arn
+    container_name   = "backend"
+    container_port   = 3000
   }
 }
 
